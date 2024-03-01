@@ -1,0 +1,17 @@
+[package]
+version = "0.1.0"
+authors = ["root"]
+edition = "2018"
+name = "find3squares"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[build-dependencies]
+dunce = "0.1.1"
+
+[dependencies]
+libloading = "0.7"
+libc = "0.2"
+hex = "0.4"
+foreign-types = "0.3.1"
+rust-gmp = { version = "0.5.0", features = ["serde_support"], git = "https://github.com/KZen-networks/rust-gmp" }
+serde = { version = "1.0", features = ["derive"] }
