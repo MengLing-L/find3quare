@@ -1,4 +1,4 @@
-use libc::{c_ulong};
+
 use gmp::mpz::*;
 
 #[link(name = "rust_three_square", kind = "static")]
