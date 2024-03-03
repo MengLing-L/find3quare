@@ -4,6 +4,7 @@
 #include <map>
 #include <gmp.h>
 //#include <iostream>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -261,8 +262,11 @@ void find_three_squares(mpz_srcptr n, mpz_ptr x0, mpz_ptr x1, mpz_ptr x2){
     gmp_randstate_t prng;
     gmp_randinit_mt(prng);
     //mpz_set_ui(seed, time(NULL));
-    mpz_set_ui(seed, 45634L);
-    gmp_randseed(prng, seed);
+    //mpz_set_ui(seed, 45634L);
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    unsigned long seed_long = tv.tv_sec * 1000000 + tv.tv_usec;
+    gmp_randseed_ui(prng, seed_long);
 
     mpz_set_ui (zero, 0);
     mpz_set_ui (one, 1);
@@ -271,17 +275,21 @@ void find_three_squares(mpz_srcptr n, mpz_ptr x0, mpz_ptr x1, mpz_ptr x2){
     size_t bits = mpz_sizeinbase(root, 2);
     int i=1;
     
-    do{
-        while(true){
-            mpz_urandomb(x0, prng, bits);
-            if (mpz_cmp(x0, root) < 0) {
-                break;
-            }
+    do {
+    // Generate a random number x0 that is guaranteed to be less than root
+        mpz_urandomb(x0, prng, bits - 1);
+        mpz_mul_2exp(x0, x0, 1); // Ensure x0 is even to satisfy the (p % 4) == 1 condition when p is found
+        mpz_mul(p, x0, x0);
+        mpz_sub(p, n, p);
+        if (mpz_cmp_ui(p, 0) <= 0) {
+            continue; // Ensure p is positive
         }
-        mpz_mul (p, x0, x0);
-        mpz_sub (p, n, p);
-        mpz_mod_ui (rem, p, 4);
-    }while(!mpz_probab_prime_p(p, BHJL_HE_MR_INTERATIONS) || mpz_cmp_ui (rem, 1) != 0 || mpz_cmp_ui (p, 0) <= 0);
+        mpz_mod_ui(rem, p, 4);
+        if (mpz_cmp_ui(rem, 1) != 0) {
+            continue; // Ensure p is 1 modulo 4
+        }
+
+    } while (!mpz_probab_prime_p(p, BHJL_HE_MR_INTERATIONS));
 
     root4(p, a);
 
