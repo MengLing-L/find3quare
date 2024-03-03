@@ -260,8 +260,8 @@ void find_three_squares(mpz_srcptr n, mpz_ptr x0, mpz_ptr x1, mpz_ptr x2){
 
     gmp_randstate_t prng;
     gmp_randinit_mt(prng);
-    mpz_set_ui(seed, time(NULL));
-    //mpz_set_ui(seed, 45634L);
+    //mpz_set_ui(seed, time(NULL));
+    mpz_set_ui(seed, 45634L);
     gmp_randseed(prng, seed);
 
     mpz_set_ui (zero, 0);
