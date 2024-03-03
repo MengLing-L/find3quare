@@ -37,7 +37,7 @@ fn cvt_n(r: c_int) -> Result<c_int, ParseError> {
     }
 }
 fn main() {
-    let mut n: Mpz = From::<i64>::from(54);
+    let mut n: Mpz = From::<i64>::from(497);
     let mut x0: Mpz = From::<i64>::from(0);
     let mut x1: Mpz = From::<i64>::from(0);
     let mut x2: Mpz = From::<i64>::from(0);
