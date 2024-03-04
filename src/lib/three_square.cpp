@@ -8,6 +8,7 @@
 
 using namespace std;
 
+int static TRY_TIMES = 10000; 
 
 void mods(mpz_srcptr a, mpz_srcptr n, mpz_ptr aout){
     mpz_t tmp;
@@ -182,7 +183,11 @@ void ggcd(mpz_srcptr w0, mpz_srcptr w1, mpz_srcptr z0, mpz_srcptr z1, mpz_ptr ou
     mpz_set (tmp_w0, w0);
     mpz_set (tmp_w1, w1);
 
+    int i=0;
     while(mpz_cmp_ui (tmp_z0, 0) != 0  && mpz_cmp_ui (tmp_z1, 0) != 0){
+        if (i > TRY_TIMES){
+            break;
+        }
         grem(tmp_w0, tmp_w1, tmp_z0, tmp_z1, out_z0, out_z1);
         mpz_set (out_w0, tmp_z0);
         mpz_set (out_w1, tmp_z1);
@@ -191,6 +196,7 @@ void ggcd(mpz_srcptr w0, mpz_srcptr w1, mpz_srcptr z0, mpz_srcptr z1, mpz_ptr ou
         mpz_set (tmp_z1, out_z1);
         mpz_set (tmp_w1, out_w1);
         mpz_set (tmp_w0, out_w0);
+        i++;
     }
     mpz_clear(tmp_z0);
     mpz_clear(tmp_z1);
@@ -227,8 +233,8 @@ void root4(mpz_srcptr p, mpz_ptr a){
     mpz_init(b);
     mpz_fdiv_q_ui (k, p, 4);
     mpz_set_ui (j, 2);
-
-    while (true)
+    int i = 0;
+    while (i < TRY_TIMES)
     {
         powmods(j, k, p, a);
         mpz_mul (a_a, a, a);
@@ -241,6 +247,7 @@ void root4(mpz_srcptr p, mpz_ptr a){
             break;
         }
         mpz_add_ui (j, j, 1);
+        i++;
     }
 
     mpz_clear(k);
@@ -271,10 +278,14 @@ void find_three_squares(mpz_srcptr n, mpz_ptr x0, mpz_ptr x1, mpz_ptr x2){
 
     mpz_sqrt (root, n);
     size_t bits = mpz_sizeinbase(root, 2);
-    int i=1;
-    
+
+    int i = 0;
+    bool falg = true;
     do {
-    // Generate a random number x0 that is guaranteed to be less than root
+        if (i > TRY_TIMES){
+            falg = false;
+            break;
+        }
         mpz_urandomb(x0, prng, bits - 1);
         mpz_mul_2exp(x0, x0, 1); // Ensure x0 is even to satisfy the (p % 4) == 1 condition when p is found
         mpz_mul(p, x0, x0);
@@ -286,12 +297,13 @@ void find_three_squares(mpz_srcptr n, mpz_ptr x0, mpz_ptr x1, mpz_ptr x2){
         if (mpz_cmp_ui(rem, 1) != 0) {
             continue; // Ensure p is 1 modulo 4
         }
-
+        i++;
     } while (!mpz_probab_prime_p(p, BHJL_HE_MR_INTERATIONS));
 
-    root4(p, a);
-
-    ggcd(p, zero, a, one, x1, x2);
+    if (falg) {
+        root4(p, a);
+        ggcd(p, zero, a, one, x1, x2);
+    }
     
     mpz_clear(a);
     mpz_clear(zero);
