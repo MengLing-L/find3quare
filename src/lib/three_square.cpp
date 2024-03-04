@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int static TRY_TIMES = 10000; 
+int static TRY_TIMES = 100000; 
 
 void mods(mpz_srcptr a, mpz_srcptr n, mpz_ptr aout){
     mpz_t tmp;
